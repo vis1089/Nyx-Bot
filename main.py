@@ -48,6 +48,14 @@ async def on_message(message):
 
     if message.attachments:
         attachment = message.attachments[0]
+        
+        # Check for allowed file types, including GIF
+        allowed_file_types = ['.png', '.jpg', '.jpeg', '.gif']
+        if not any(attachment.filename.lower().endswith(ext) for ext in allowed_file_types):
+            await message.reply("Please upload a PNG, JPG, or GIF image.")
+            return
+        
+        # Check for file size limit
         if attachment.size > 1024 * 1024:
             await message.reply("Please send an image under 1MB.")
             return
@@ -64,6 +72,7 @@ async def on_message(message):
                 await message.channel.send(chunk)
         else:
             await message.reply("No text recognized in the image.")
+
 
 
 bot.run(os.environ['DISCORD_TOKEN'])
