@@ -21,7 +21,6 @@ message_history = {}
 processing_users = set()
 active = False
 
-nyx_api_key = os.environ['NYX_KEY']
 ocr_key = os.environ['OCR_KEY']
 generator = prodia.AsyncClient(api_key=os.environ['PRODIA_KEY'])
 intents = discord.Intents.all()
