@@ -70,19 +70,19 @@ async def generate_response(messages):
                 print("An error occurred:", e)
                 raise Exception(e)
 
-  async with aiohttp.ClientSession() as session:
-      async with session.post(url, headers=headers, json=data) as response:
-          completion = json.loads(await response.text())
-          print(completion)  # Print the full API response for debugging
-          try:
-              if "choices" in completion and len(completion["choices"]) > 0:
-                  response_message = completion["choices"][0]["message"]["content"]
-                  if response_message:
-                      return response_message
-              return "No valid response available."
-          except Exception as e:
-              print("An error occurred:", e)
-              raise Exception(e)
+async with aiohttp.ClientSession() as session:
+    async with session.post(url, headers=headers, json=data) as response:
+        completion = json.loads(await response.text())
+        print(completion)  # Print the full API response for debugging
+        try:
+            if "choices" in completion and len(completion["choices"]) > 0:
+                response_message = completion["choices"][0]["message"]["content"]
+                 if response_message:
+                    return response_message
+             return "No valid response available."
+        except Exception as e:
+             print("An error occurred:", e)
+             raise Exception(e)
 
 def split_response(response, max_length=1900):
   lines = response.splitlines()
