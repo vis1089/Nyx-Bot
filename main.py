@@ -5,7 +5,6 @@ import json
 import asyncio
 import os
 import openai
-import keep_alive
 from discord import option
 import prodia
 import random
