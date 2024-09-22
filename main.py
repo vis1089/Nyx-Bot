@@ -65,5 +65,5 @@ async def on_message(message):
         else:
             await message.reply("No text recognized in the image.")
 
-keep_alive.keep_alive()  # Ensure this is part of your setup if using Flask or similar for hosting
+
 bot.run(os.environ['DISCORD_TOKEN'])
