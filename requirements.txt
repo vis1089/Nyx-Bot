@@ -6,7 +6,5 @@ sdxl
 py-cord
 flask
 beautifulsoup4
-discord.py==2.3.0  # Adjust this to the latest version if needed
-aiohttp==3.8.1
 Pillow==10.0.0
 pytesseract==0.3.10
