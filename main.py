@@ -11,7 +11,6 @@ import random
 import requests
 from datetime import datetime, timedelta
 import base64
-import datetime
 from io import BytesIO
 from bs4 import BeautifulSoup
 
@@ -23,20 +22,19 @@ processing_users = set()
 active = False
 
 nyx_api_key = os.environ['NYX_KEY']
-ocr_key= os.environ['OCR_KEY']
+ocr_key = os.environ['OCR_KEY']
 generator = prodia.AsyncClient(api_key=os.environ['PRODIA_KEY'])
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="xr7.", intents=intents)
 
-
 @bot.slash_command(
-  name="toggle-active",
-  description="Toggle on/off the chat functionality"
+    name="toggle-active",
+    description="Toggle on/off the chat functionality"
 )
 async def toggle(ctx):
-  global active
-  active = not active
-  await ctx.respond(f"Chat functionality is now {'on' if active else 'off'}.")
+    global active
+    active = not active
+    await ctx.respond(f"Chat functionality is now {'on' if active else 'off'}.")
 
 async def generate_response(messages):
     base = ""
@@ -70,69 +68,55 @@ async def generate_response(messages):
                 print("An error occurred:", e)
                 raise Exception(e)
 
-async with aiohttp.ClientSession() as session:
-    async with session.post(url, headers=headers, json=data) as response:
-        completion = json.loads(await response.text())
-        print(completion)  # Print the full API response for debugging
-        try:
-            if "choices" in completion and len(completion["choices"]) > 0:
-                response_message = completion["choices"][0]["message"]["content"]
-                 if response_message:
-                    return response_message
-             return "No valid response available."
-        except Exception as e:
-             print("An error occurred:", e)
-             raise Exception(e)
-
 def split_response(response, max_length=1900):
-  lines = response.splitlines()
-  chunks = []
-  current_chunk = ""
+    lines = response.splitlines()
+    chunks = []
+    current_chunk = ""
 
-  for line in lines:
-      if len(current_chunk) + len(line) + 1 > max_length:
-          chunks.append(current_chunk.strip())
-          current_chunk = line
-      else:
-          if current_chunk:
-              current_chunk += "\n"
-          current_chunk += line
+    for line in lines:
+        if len(current_chunk) + len(line) + 1 > max_length:
+            chunks.append(current_chunk.strip())
+            current_chunk = line
+        else:
+            if current_chunk:
+                current_chunk += "\n"
+            current_chunk += line
 
-  if current_chunk:
-      chunks.append(current_chunk.strip())
+    if current_chunk:
+        chunks.append(current_chunk.strip())
 
-  return chunks
+    return chunks
 
 async def ocr_space_url(url, overlay=False, api_key=ocr_key, language='eng'):
-  payload = {
-      'url': url,
-      'isOverlayRequired': overlay,
-      'apikey': api_key,
-      'language': language,
-      'OCREngine': 2,  # Add this line
-  }
-  async with aiohttp.ClientSession() as session:
-      async with session.post('https://api.ocr.space/parse/image', data=payload) as response:
-          result = await response.text()
-          return result
+    payload = {
+        'url': url,
+        'isOverlayRequired': overlay,
+        'apikey': api_key,
+        'language': language,
+        'OCREngine': 2,  # Add this line
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post('https://api.ocr.space/parse/image', data=payload) as response:
+            result = await response.text()
+            return result
 
 async def generate_image_description(url):
-  url = 'https://www.llama2.ai/api'
-  headers = {}
-  data = {
-      "prompt": "[INST] explain this image in breif[/INST]\n",
-      "version": "c6ad29583c0b29dbd42facb4a474a0462c15041b78b1ad70952ea46b5e24959",
-      "systemPrompt": "You are a helpful assistant.",
-      "temperature": 0.75,
-      "topP": 0.9,
-      "maxTokens": 800,
-      "image": url,
-      "audio": None
-  }
-  async with aiohttp.ClientSession() as session:
-      async with session.post(url, headers=headers, json=data) as response:
-          result = await response.text()
-          return result
+    url = 'https://www.llama2.ai/api'
+    headers = {}
+    data = {
+        "prompt": "[INST] explain this image in breif[/INST]\n",
+        "version": "c6ad29583c0b29dbd42facb4a474a0462c15041b78b1ad70952ea46b5e24959",
+        "systemPrompt": "You are a helpful assistant.",
+        "temperature": 0.75,
+        "topP": 0.9,
+        "maxTokens": 800,
+        "image": url,
+        "audio": None
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, json=data) as response:
+            result = await response.text()
+            return result
 
 @bot.event
 async def on_message(message):
