@@ -5,7 +5,7 @@ import json
 import asyncio
 import os
 import openai
-from discord import option
+from discord import app_commands
 import prodia
 import random
 import requests
